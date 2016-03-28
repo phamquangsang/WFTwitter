@@ -2,9 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="app.com.phamsang.wftwitter">
 
-
-
-
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
@@ -23,8 +20,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
-
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -39,6 +34,11 @@
                     android:host="phamsang.com"
                     android:scheme="x-oauthflow-twitter"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".UserDetailActivity"
+            android:label="@string/title_activity_user_detail"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

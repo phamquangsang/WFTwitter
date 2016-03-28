@@ -13,7 +13,7 @@ import app.com.phamsang.wftwitter.data.Contract.*;
 public class TwitterDatabaseHelper extends SQLiteOpenHelper {
     private final String LOG_TAG = TwitterDatabaseHelper.class.getSimpleName();
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     static final String DATABASE_NAME = "wftwitter.db";
     public TwitterDatabaseHelper(Context context){
@@ -32,6 +32,8 @@ public class TwitterDatabaseHelper extends SQLiteOpenHelper {
                 TweetEntry.COLLUMN_RETWEET + " INTEGER NOT NULL , "+
                 TweetEntry.COLLUMN_LIKE + " INTEGER NOT NULL , "+
                 TweetEntry.COLLUMN_USER_ID + " INTEGER NOT NULL ,  "+
+                TweetEntry.COLLUMN_IS_LIKED+ " INTEGER NOT NULL , "+
+                TweetEntry.COLLUMN_IS_RETWEETED + " INTEGER NOT NULL , "+
                 " FOREIGN KEY (" + TweetEntry.COLLUMN_USER_ID + ") REFERENCES " +
                 UserEntry.TABLE_NAME + " (" + UserEntry.COLLUMN_ID + ") " +
                 ");";

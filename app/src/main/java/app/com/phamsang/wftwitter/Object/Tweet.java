@@ -1,6 +1,8 @@
 package app.com.phamsang.wftwitter.Object;
 
 import android.content.ContentValues;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -15,9 +17,9 @@ import app.com.phamsang.wftwitter.data.Contract;
 /**
  * Created by Quang Quang on 3/26/2016.
  */
-public class Tweet {
+public class Tweet implements Parcelable {
     private static final String LOG_TAG = Tweet.class.getSimpleName();
-    @SerializedName("id")
+    @SerializedName("id_str")
     private long mId;
     @SerializedName("text")
     private String mText;
@@ -31,6 +33,26 @@ public class Tweet {
     private String mDisplayImageUrl;
     @SerializedName("user")
     private User mUser;
+    @SerializedName("favorited")
+    private boolean isFavorited;
+    @SerializedName("retweeted")
+    private boolean isRetweeted;
+
+    public boolean isFavorited() {
+        return isFavorited;
+    }
+
+    public void setFavorited(boolean favorited) {
+        isFavorited = favorited;
+    }
+
+    public boolean isRetweeted() {
+        return isRetweeted;
+    }
+
+    public void setRetweeted(boolean retweeted) {
+        isRetweeted = retweeted;
+    }
 
     public User getUser() {
         return mUser;
@@ -154,7 +176,52 @@ public class Tweet {
         contentValues.put(Contract.TweetEntry.COLLUMN_TIME, mTime);
         contentValues.put(Contract.TweetEntry.COLUMN_TEXT, mText);
         contentValues.put(Contract.TweetEntry.COLLUMN_USER_ID, mUser.getId());
+        contentValues.put(Contract.TweetEntry.COLLUMN_IS_LIKED, (isFavorited?1:0));
+        contentValues.put(Contract.TweetEntry.COLLUMN_IS_RETWEETED, isRetweeted?1:0);
         return contentValues;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.mId);
+        dest.writeString(this.mText);
+        dest.writeString(this.mTime);
+        dest.writeInt(this.mRetweetCount);
+        dest.writeInt(this.mFavouriteCount);
+        dest.writeString(this.mImageUrl);
+        dest.writeString(this.mDisplayImageUrl);
+        dest.writeParcelable(this.mUser, flags);
+        dest.writeByte(isFavorited ? (byte) 1 : (byte) 0);
+        dest.writeByte(isRetweeted ? (byte) 1 : (byte) 0);
+    }
+
+    protected Tweet(Parcel in) {
+        this.mId = in.readLong();
+        this.mText = in.readString();
+        this.mTime = in.readString();
+        this.mRetweetCount = in.readInt();
+        this.mFavouriteCount = in.readInt();
+        this.mImageUrl = in.readString();
+        this.mDisplayImageUrl = in.readString();
+        this.mUser = in.readParcelable(User.class.getClassLoader());
+        this.isFavorited = in.readByte() != 0;
+        this.isRetweeted = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<Tweet> CREATOR = new Parcelable.Creator<Tweet>() {
+        @Override
+        public Tweet createFromParcel(Parcel source) {
+            return new Tweet(source);
+        }
+
+        @Override
+        public Tweet[] newArray(int size) {
+            return new Tweet[size];
+        }
+    };
 }

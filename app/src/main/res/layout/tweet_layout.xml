@@ -69,7 +69,7 @@
                 android:paddingTop="4dp"
                 android:autoLink="all"
                 tools:text="Great bunch ò designs here for @MaterialUp Berlin. Top 6 tweets WIN a Prize #materialmeetup #berlin"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"/>
 
             <ImageView
                 android:id="@+id/imageView_media"

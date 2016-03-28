@@ -1,6 +1,7 @@
 package app.com.phamsang.wftwitter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -53,6 +54,47 @@ public class TwitterClient extends OAuthBaseClient {
             params.put("in_reply_to_status_id",replyTo);
         }
         client.post(apiUrl, params, handler);
+    }
+
+    public void reTweet(long id, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("statuses/retweet/holderID.json");
+        String url = apiUrl.replaceAll("holderID",String.valueOf(id));
+        Log.d(TwitterClient.class.getSimpleName(),url);
+        RequestParams params = new RequestParams();
+        params.put("trim_user",1);
+        client.post(url,params,handler);
+    }
+    public void unRetweet(long id, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("statuses/unretweet/holderID.json");
+        String url = apiUrl.replaceAll("holderID",String.valueOf(id));
+        Log.d(TwitterClient.class.getSimpleName(),url);
+        RequestParams params = new RequestParams();
+        params.put("trim_user",1);
+        client.post(url,params,handler);
+    }
+
+    public void like(long id, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("favorites/create.json");
+        RequestParams params = new RequestParams();
+        params.put("id",String.valueOf(id));
+        params.put("include_entities",false);
+        client.post(apiUrl,params,handler);
+    }
+
+    public void unLike(long id, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("favorites/destroy.json");
+        RequestParams params = new RequestParams();
+        params.put("id",String.valueOf(id));
+        params.put("include_entities",false);
+        client.post(apiUrl,params,handler);
+    }
+
+    public void getAccount(AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("account/verify_credentials.json");
+        RequestParams params = new RequestParams();
+        params.put("skip_status",String.valueOf(true));
+        params.put("include_entities",false);
+        client.get(apiUrl,params,handler);
     }
 
     public static TwitterClient getInstance(Context c){

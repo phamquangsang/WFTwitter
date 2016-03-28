@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -44,7 +45,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
     private LinearLayoutManager mLayoutManager;
     private TimelineAdapter mAdapter;
     private SharedPreferences mSetting;
-
+    private User mUser;
     private long mSinceId;
     private long mMaxId;
 
@@ -56,6 +57,37 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        initializeMemberVariable();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_time_line, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_sign_out) {
+            mClient.clearAccessToken();
+            Utilities.deleteDatabase(this);
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void initializeMemberVariable(){
         mClient = (TwitterClient)TwitterClient.getInstance(TwitterClient.class,this);
         if (mClient.isAuthenticated() == false) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -88,7 +120,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TweetComposerDialog composer = TweetComposerDialog.newInstance(new User());
+                TweetComposerDialog composer = TweetComposerDialog.newInstance(mUser, null);
                 composer.show(getFragmentManager(),"COMPOSER_TAG");
             }
         });
@@ -97,32 +129,11 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
         mSinceId = mSetting.getLong(SINCE_ID_KEY, 0L);
         mMaxId = mSetting.getLong(MAX_ID_KEY, 0L);
 
+        getUserDetail();
 
         if (mAdapter.getItemCount() == 0) {
             getLatestTweets(-1);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_time_line, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public void getLatestTweets(final long sinceId) {
@@ -173,6 +184,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
     }
 
     public void getMoreTweets(long maxId) {
+        //call when user hit the end of the list
         if (!Utilities.isNetworkAvailable(this)) {
             Snackbar.make(mRecyclerView, R.string.no_internet_warning, Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -225,8 +237,27 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
         mSetting.edit().putLong(MAX_ID_KEY, maxId).commit();
     }
 
+    private void getUserDetail(){
+        mClient.getAccount(new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                if(statusCode!=200){
+                    Log.e(LOG_TAG, "error getting user detail information code: "+statusCode);
+                }
+                Gson gson = new Gson();
+                mUser = gson.fromJson(response.toString(),User.class);
+                Log.i(LOG_TAG,"use detail: "+mUser.toDetailString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        });
+    }
     @Override
     public void onDialogPostButtonClick() {
-        getLatestTweets(mSinceId);
+        getLatestTweets(0L);
     }
 }

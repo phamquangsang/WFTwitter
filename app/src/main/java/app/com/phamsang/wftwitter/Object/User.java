@@ -12,7 +12,7 @@ import app.com.phamsang.wftwitter.data.Contract.UserEntry;
  * Created by Quang Quang on 3/27/2016.
  */
 public class User implements Parcelable {
-    @SerializedName("id")
+    @SerializedName("id_str")
     private long mId;
     @SerializedName("name")
     private String mName;
@@ -220,4 +220,9 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
+    public String toDetailString(){
+        String detail = "ID: "+mId+" - Name: "+mName+" - Description: "+mDescription+" - Location: "+mLocation+" - Profile Image: "+mProfileUrl;
+        return detail;
+    }
 }

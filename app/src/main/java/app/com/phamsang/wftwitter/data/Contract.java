@@ -20,6 +20,8 @@ public final class Contract {
         public static final String COLLUMN_RETWEET = "retweet_count";
         public static final String COLLUMN_LIKE = "favorite_count";
         public static final String COLLUMN_USER_ID = "user_id";
+        public static final String COLLUMN_IS_LIKED = "is_liked";
+        public static final String COLLUMN_IS_RETWEETED = "is_retweeted";
     }
 
     public static final class UserEntry implements BaseColumns{

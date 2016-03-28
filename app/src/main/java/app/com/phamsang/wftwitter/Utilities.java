@@ -78,6 +78,10 @@ public class Utilities {
             tweet.setRetweetCount(c.getInt(c.getColumnIndex(TweetEntry.COLLUMN_RETWEET)));
             tweet.setText(c.getString(c.getColumnIndex(TweetEntry.COLUMN_TEXT)));
             tweet.setTime(c.getString(c.getColumnIndex(TweetEntry.COLLUMN_TIME)));
+            int isliked = c.getInt(c.getColumnIndex(TweetEntry.COLLUMN_IS_LIKED));
+            tweet.setFavorited((isliked==1)?true:false);
+            int isRetweet = c.getInt(c.getColumnIndex(TweetEntry.COLLUMN_IS_RETWEETED));
+            tweet.setRetweeted((isRetweet==1)?true:false);
 
             User user = new User();
             user.setId(c.getLong(c.getColumnIndex(UserEntry.COLLUMN_ID)));
@@ -110,5 +114,14 @@ public class Utilities {
             e.printStackTrace();
             return e.toString();
         }
+    }
+
+    public static int updateTweet(long id, ContentValues value, Context context){
+        TwitterDatabaseHelper dbHelper = new TwitterDatabaseHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = TweetEntry.COLLUMN_ID+"=?";
+        String[] selectionArg = {Long.toString(id)};
+        int result = db.update(TweetEntry.TABLE_NAME,value,selection,selectionArg);
+        return result;
     }
 }
