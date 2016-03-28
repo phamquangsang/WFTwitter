@@ -42,7 +42,7 @@ The following **bonus** features are implemented:
 
 The following **additional** features are implemented:
 
-* [ ] List anything else that you can get done to improve the app functionality!
+* [x] List anything else that you can get done to improve the app functionality!
  *[x] user can tap the like button to like a tweet, tap again to unlike;
  *[x] user can tap the retweet button to retweet, tap again to unRetweet;
  *[x] user can tab the Name to see detail information of the account.
