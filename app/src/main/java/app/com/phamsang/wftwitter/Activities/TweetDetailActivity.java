@@ -29,12 +29,15 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.apache.http.Header;
 
+import app.com.phamsang.wftwitter.DatabaseUtilities;
 import app.com.phamsang.wftwitter.EndlessRecyclerViewScrollListener;
 import app.com.phamsang.wftwitter.Object.Tweet;
 import app.com.phamsang.wftwitter.R;
 import app.com.phamsang.wftwitter.TimelineAdapter;
+import app.com.phamsang.wftwitter.TweetComposerDialog;
 import app.com.phamsang.wftwitter.TwitterClient;
 import app.com.phamsang.wftwitter.Utilities;
+import app.com.phamsang.wftwitter.data.Contract;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class TweetDetailActivity extends AppCompatActivity {
@@ -179,6 +182,124 @@ public class TweetDetailActivity extends AppCompatActivity {
         setUpButtonListener(data);
     }
 
-    public void setUpButtonListener(Tweet data) {
+    public void setUpButtonListener(final Tweet data) {
+        mRetweet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TwitterClient client = TwitterClient.getInstance(TweetDetailActivity.this);
+                if (!data.isRetweeted()) {
+                    client.reTweet(data.getId(), new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            if (statusCode == 200) {
+                                Drawable image = ContextCompat.getDrawable(TweetDetailActivity.this, R.drawable.ic_autorenew_blue_24dp);
+                                mRetweet.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
+                                data.setRetweeted(true);
+                                int retweet = data.getRetweetCount() + 1;
+                                data.setRetweetCount(retweet);
+                                mRetweet.setText(String.valueOf(retweet));
+                                int result = DatabaseUtilities.updateTweet(data.getId(), data.toContentValue(), TweetDetailActivity.this, Contract.TweetEntry.TABLE_NAME);
+                                if (result == 0) {
+                                    Log.i(LOG_TAG, "failed to update database, the tweet id: "+data.getId()+" maybe not in database");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                        }
+                    });
+                } else {
+                    client.unRetweet(data.getId(), new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            if (statusCode == 200) {
+                                Drawable image = ContextCompat.getDrawable(TweetDetailActivity.this, R.drawable.ic_autorenew_black_24dp);
+                                mRetweet.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
+                                data.setRetweeted(false);
+                                int retweet = data.getRetweetCount() - 1;
+                                data.setRetweetCount(retweet);
+                                mRetweet.setText(String.valueOf(retweet));
+                                int result = DatabaseUtilities.updateTweet(data.getId(), data.toContentValue(), TweetDetailActivity.this, Contract.TweetEntry.TABLE_NAME);
+                                if (result == 0) {
+                                    Toast.makeText(TweetDetailActivity.this, "failed to update database", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                        }
+                    });
+                }
+
+            }
+        });
+
+        mLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TwitterClient client = TwitterClient.getInstance(TweetDetailActivity.this);
+                if (!data.isFavorited()) {
+                    client.like(data.getId(), new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            if (statusCode == 200) {
+                                Drawable image = ContextCompat.getDrawable(TweetDetailActivity.this, R.drawable.ic_favorite_blue_24dp);
+                                mLike.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
+                                data.setFavorited(true);
+                                int likesCount = data.getFavouriteCount() + 1;
+                                data.setFavouriteCount(likesCount);
+                                mLike.setText(String.valueOf(likesCount));
+                                int result = DatabaseUtilities.updateTweet(data.getId(), data.toContentValue(), TweetDetailActivity.this, Contract.TweetEntry.TABLE_NAME);
+                                if (result == 0) {
+                                    Log.i(LOG_TAG, "failed to update database, the tweet id: "+data.getId()+" maybe not in database");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                        }
+                    });
+                } else {
+                    client.unLike(data.getId(), new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            if (statusCode == 200) {
+                                Drawable image = ContextCompat.getDrawable(TweetDetailActivity.this, R.drawable.ic_favorite_black_24dp);
+                                mLike.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
+                                data.setFavorited(false);
+                                int likeCount = data.getFavouriteCount() - 1;
+                                data.setFavouriteCount(likeCount);
+                                mLike.setText(String.valueOf(likeCount));
+                                int result = DatabaseUtilities.updateTweet(data.getId(), data.toContentValue(), TweetDetailActivity.this, Contract.TweetEntry.TABLE_NAME);
+                                if (result == 0) {
+                                    Log.i(LOG_TAG, "failed to update database, the tweet id: "+data.getId()+" maybe not in database");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                        }
+                    });
+                }
+            }
+        });
+
+        mReplyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TweetComposerDialog dialog = TweetComposerDialog.newInstance(null, data);
+                AppCompatActivity activity = (AppCompatActivity) TweetDetailActivity.this;
+                dialog.show(activity.getSupportFragmentManager(), TweetComposerDialog.DIALOG_TAG);
+            }
+        });
+
     }
 }
