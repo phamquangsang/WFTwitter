@@ -116,4 +116,5 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_tweet_detail">TweetDetailActivity</string>
+    <string name="title_activity_following">FollowingActivity</string>
 </resources>

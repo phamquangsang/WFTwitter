@@ -81,6 +81,29 @@ public class TwitterClient extends OAuthBaseClient {
         client.get(apiUrl, params, handler);
     }
 
+    public void getFollowerList(String screenName, long cursor,int count, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("followers/list.json");
+        RequestParams params = new RequestParams();
+        if(cursor > 0){
+            params.put("cursor",String.valueOf(cursor));
+        }
+
+        params.put("count",count);
+        params.put("screen_name",screenName);
+        client.get(apiUrl, params, handler);
+    }
+
+    public void getFollowingList(String screenName, long cursor,int count, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("friends/list.json");
+        RequestParams params = new RequestParams();
+        if(cursor > 0){
+            params.put("cursor",String.valueOf(cursor));
+        }
+
+        params.put("count",count);
+        params.put("screen_name",screenName);
+        client.get(apiUrl, params, handler);
+    }
     //UPDATE TWEET statuses/update.json
 
     public void updateStatus(String status, long replyTo, AsyncHttpResponseHandler handler) {
@@ -96,6 +119,7 @@ public class TwitterClient extends OAuthBaseClient {
         }
         client.post(apiUrl, params, handler);
     }
+
 
 
 
