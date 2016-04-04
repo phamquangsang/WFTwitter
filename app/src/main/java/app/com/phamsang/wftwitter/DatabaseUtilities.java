@@ -127,6 +127,10 @@ public class DatabaseUtilities {
             user.setProfileUrl(c.getString(c.getColumnIndex(Contract.UserEntry.COLLUMN_PROFILE_IMAGE_URL)));
             user.setScreenName(c.getString(c.getColumnIndex(Contract.UserEntry.COLLUMN_SCREEN_NAME)));
             user.setStatusCount(c.getInt(c.getColumnIndex(Contract.UserEntry.COLLUMN_STATUS_COUNT)));
+            int isFollowing = c.getInt(c.getColumnIndex(Contract.UserEntry.COLLUMN_FOLLOWING));
+            user.setFollowing((isFollowing==1)?true:false);
+            int isNotification = c.getInt(c.getColumnIndex(Contract.UserEntry.COLLUMN_NOTIFICATION));
+            user.setNotification((isNotification==1)?true:false);
             tweet.setUser(user);
             dataset.add(tweet);
         }
