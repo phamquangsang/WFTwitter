@@ -159,10 +159,10 @@ public class UserDetailActivity extends AppCompatActivity implements TweetCompos
             if(position==0){
                 return UserTimelineFragment.newInstance(mUser.getScreenName());
             }
+//            if(position==1){
+//                return  MentionFragment.newInstance();
+//            }
             if(position==1){
-                return  MentionFragment.newInstance();
-            }
-            if(position==2){
                 return UserDetailTweetLikeFragment.newInstance(mUser.getScreenName());
             }
             return null;
@@ -171,7 +171,7 @@ public class UserDetailActivity extends AppCompatActivity implements TweetCompos
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 2;
         }
 
         @Override
@@ -180,9 +180,8 @@ public class UserDetailActivity extends AppCompatActivity implements TweetCompos
                 case 0:
                     return "Tweets";
                 case 1:
-                    return "Media";
-                case 2:
                     return "Likes";
+
             }
             return null;
         }
