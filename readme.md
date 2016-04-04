@@ -88,6 +88,8 @@ Describe any challenges encountered while building the app.
 	
 ## User Stories
 
+in branch 'twitter2'
+
 The following **required** functionality is completed:
 
 * [x] The app includes **all required user stories** from Week 3 Twitter Client
