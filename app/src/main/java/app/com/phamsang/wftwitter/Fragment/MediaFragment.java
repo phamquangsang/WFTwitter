@@ -84,22 +84,22 @@ public class MediaFragment extends Fragment {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             switch (position){
-                case 1:
+                case 0:
                     Glide.with(mContext).load(R.drawable.image1).into(holder.mImageView);
                     return;
-                case 2:
+                case 1:
                     Glide.with(mContext).load(R.drawable.image2).into(holder.mImageView);
                     return;
-                case 3:
+                case 2:
                     Glide.with(mContext).load(R.drawable.image3).into(holder.mImageView);
                     return;
-                case 4:
+                case 3:
                     Glide.with(mContext).load(R.drawable.image4).into(holder.mImageView);
                     return;
-                case 5:
+                case 4:
                     Glide.with(mContext).load(R.drawable.image5).into(holder.mImageView);
                     return;
-                case 6:
+                case 5:
                     Glide.with(mContext).load(R.drawable.image6).into(holder.mImageView);
                     return;
             }
