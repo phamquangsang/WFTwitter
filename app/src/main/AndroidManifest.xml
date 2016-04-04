@@ -45,6 +45,11 @@
             android:label="@string/title_activity_tweet_detail"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".Activities.FollowingActivity"
+            android:label="@string/title_activity_following"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
