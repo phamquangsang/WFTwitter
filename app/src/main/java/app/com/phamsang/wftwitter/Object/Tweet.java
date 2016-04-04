@@ -31,12 +31,14 @@ public class Tweet implements Parcelable {
     private int mFavouriteCount;
     private String mImageUrl;
     private String mDisplayImageUrl;
+    private String mUsersMention;
     @SerializedName("user")
     private User mUser;
     @SerializedName("favorited")
     private boolean isFavorited;
     @SerializedName("retweeted")
     private boolean isRetweeted;
+
 
     public boolean isFavorited() {
         return isFavorited;
@@ -70,7 +72,7 @@ public class Tweet implements Parcelable {
         mDisplayImageUrl = displayImageUrl;
     }
 
-    public Tweet(long id, User user, String text, String time, int retweetCount, int favouriteCount, String imageUrl) {
+    public Tweet(long id, User user, String text, String time, int retweetCount, int favouriteCount, String imageUrl, String userMention) {
         mId = id;
         mUser = user;
         mText = text;
@@ -78,6 +80,7 @@ public class Tweet implements Parcelable {
         mRetweetCount = retweetCount;
         mFavouriteCount = favouriteCount;
         mImageUrl = imageUrl;
+        mUsersMention = userMention;
     }
 
     public Tweet() {
@@ -132,6 +135,14 @@ public class Tweet implements Parcelable {
         mImageUrl = imageUrl;
     }
 
+    public String getUsersMention() {
+        return mUsersMention;
+    }
+
+    public void setUsersMention(String mUsersMention) {
+        this.mUsersMention = mUsersMention;
+    }
+
     @Override
     public String toString(){
         return "id: "+mId+" - text: "+mText+" - time: "+mTime+" - retweet count: "+mRetweetCount+" - like count: "+mFavouriteCount+ " - imageUrl: "+mImageUrl;
@@ -155,10 +166,19 @@ public class Tweet implements Parcelable {
                     }
                 }
             }
-
+            String usersMention = "";
+            JSONArray usersMentionArray = entities.getJSONArray("user_mentions");
+            if(usersMentionArray!=null){
+                for(int j = 0; j<usersMentionArray.length();++j){
+                    JSONObject userMention = usersMentionArray.getJSONObject(j);
+                    usersMention+= ("@"+userMention.getString("screen_name")+" ");
+                }
+                tweet.setUsersMention(usersMention);
+            }
 
             JSONObject user = object.getJSONObject("user");
             tweet.setUser(gson.fromJson(user.toString(),User.class));
+
         } catch (JSONException e) {
             e.printStackTrace();
             Log.d(LOG_TAG,"buiding Tweet from json failed - "+ e.toString());
@@ -178,8 +198,10 @@ public class Tweet implements Parcelable {
         contentValues.put(Contract.TweetEntry.COLLUMN_USER_ID, mUser.getId());
         contentValues.put(Contract.TweetEntry.COLLUMN_IS_LIKED, (isFavorited?1:0));
         contentValues.put(Contract.TweetEntry.COLLUMN_IS_RETWEETED, isRetweeted?1:0);
+        contentValues.put(Contract.TweetEntry.COLLUMN_USERS_MENTION,mUsersMention);
         return contentValues;
     }
+
 
     @Override
     public int describeContents() {
@@ -195,6 +217,7 @@ public class Tweet implements Parcelable {
         dest.writeInt(this.mFavouriteCount);
         dest.writeString(this.mImageUrl);
         dest.writeString(this.mDisplayImageUrl);
+        dest.writeString(this.mUsersMention);
         dest.writeParcelable(this.mUser, flags);
         dest.writeByte(isFavorited ? (byte) 1 : (byte) 0);
         dest.writeByte(isRetweeted ? (byte) 1 : (byte) 0);
@@ -208,6 +231,7 @@ public class Tweet implements Parcelable {
         this.mFavouriteCount = in.readInt();
         this.mImageUrl = in.readString();
         this.mDisplayImageUrl = in.readString();
+        this.mUsersMention = in.readString();
         this.mUser = in.readParcelable(User.class.getClassLoader());
         this.isFavorited = in.readByte() != 0;
         this.isRetweeted = in.readByte() != 0;

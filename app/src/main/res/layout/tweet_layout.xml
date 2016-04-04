@@ -10,6 +10,7 @@
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="8dp"
         android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -17,9 +18,10 @@
             android:id="@+id/profile_image"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_margin="8dp"
+            android:layout_marginRight="8dp"
             android:scaleType="centerCrop"
             android:src="@drawable/profile"
+            android:transitionName="profile"
             app:civ_border_color="#FF000000"
             app:civ_border_width="0dp"/>
 
@@ -27,9 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="8dp">
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -42,7 +42,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="Material Up"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"/>
+                    android:fontFamily="sans-serif-condensed"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
 
                 <TextView
                     android:id="@+id/screen_name_textView"
@@ -51,14 +52,16 @@
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     tools:text="\@materialup"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    android:fontFamily="sans-serif-light"/>
 
                 <TextView
                     android:id="@+id/time_textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="12h"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    android:fontFamily="sans-serif-light"
                     />
             </LinearLayout>
 
@@ -68,10 +71,12 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
                 android:autoLink="all"
+                android:fontFamily="sans-serif-light"
                 tools:text="Great bunch ò designs here for @MaterialUp Berlin. Top 6 tweets WIN a Prize #materialmeetup #berlin"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"/>
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
 
             <ImageView
+                android:layout_marginTop="8dp"
                 android:id="@+id/imageView_media"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -93,7 +98,8 @@
                     android:background="@android:color/transparent"
                     android:drawableLeft="@drawable/ic_reply_black_24dp"
                     android:padding="4dp"
-                    android:text="@string/reply"/>
+                    android:text="@string/reply"
+                    android:fontFamily="sans-serif-light"/>
 
                 <Button
                     android:id="@+id/button_retweet"
@@ -104,6 +110,7 @@
                     android:drawableLeft="@drawable/ic_autorenew_black_24dp"
                     android:padding="4dp"
                     android:text="@string/retweet"
+                    android:fontFamily="sans-serif-light"
                     />
 
                 <Button
@@ -114,7 +121,8 @@
                     android:background="@android:color/transparent"
                     android:drawableLeft="@drawable/ic_favorite_black_24dp"
                     android:padding="4dp"
-                    android:text="@string/like"/>
+                    android:text="@string/like"
+                    android:fontFamily="sans-serif-light"/>
             </LinearLayout>
         </LinearLayout>
 

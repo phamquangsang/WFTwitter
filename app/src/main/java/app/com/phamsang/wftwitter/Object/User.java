@@ -34,6 +34,10 @@ public class User implements Parcelable {
     private String mBackgroundUrl;
     @SerializedName("profile_image_url")
     private String mProfileUrl;
+    @SerializedName("following")
+    private boolean isFollowing;
+    @SerializedName("notifications")
+    private boolean isNotification;
 
     public User() {
 
@@ -159,6 +163,22 @@ public class User implements Parcelable {
         mProfileUrl = profileUrl;
     }
 
+    public boolean isFollowing() {
+        return isFollowing;
+    }
+
+    public void setFollowing(boolean pFollowing) {
+        isFollowing = pFollowing;
+    }
+
+    public boolean isNotification() {
+        return isNotification;
+    }
+
+    public void setNotification(boolean pNotification) {
+        isNotification = pNotification;
+    }
+
     public ContentValues toContentValue() {
         ContentValues content = new ContentValues();
         content.put(UserEntry.COLLUMN_ID, mId);
@@ -172,7 +192,14 @@ public class User implements Parcelable {
         content.put(UserEntry.COLLUMN_SCREEN_NAME, mScreenName);
         content.put(UserEntry.COLLUMN_PROFILE_IMAGE_URL, mProfileUrl);
         content.put(UserEntry.COLLUMN_STATUS_COUNT, mStatusCount);
+        content.put(UserEntry.COLLUMN_FOLLOWING, isFollowing?1:0);
+        content.put(UserEntry.COLLUMN_NOTIFICATION, isNotification?1:0);
         return content;
+    }
+
+    public String toDetailString(){
+        String detail = "ID: "+mId+" - Name: "+mName+" - Description: "+mDescription+" - Location: "+mLocation+" - Profile Image: "+mProfileUrl;
+        return detail;
     }
 
     @Override
@@ -193,6 +220,8 @@ public class User implements Parcelable {
         dest.writeInt(this.mStatusCount);
         dest.writeString(this.mBackgroundUrl);
         dest.writeString(this.mProfileUrl);
+        dest.writeByte(isFollowing ? (byte) 1 : (byte) 0);
+        dest.writeByte(isNotification ? (byte) 1 : (byte) 0);
     }
 
     protected User(Parcel in) {
@@ -207,9 +236,11 @@ public class User implements Parcelable {
         this.mStatusCount = in.readInt();
         this.mBackgroundUrl = in.readString();
         this.mProfileUrl = in.readString();
+        this.isFollowing = in.readByte() != 0;
+        this.isNotification = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
         public User createFromParcel(Parcel source) {
             return new User(source);
@@ -220,9 +251,4 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
-
-    public String toDetailString(){
-        String detail = "ID: "+mId+" - Name: "+mName+" - Description: "+mDescription+" - Location: "+mLocation+" - Profile Image: "+mProfileUrl;
-        return detail;
-    }
 }

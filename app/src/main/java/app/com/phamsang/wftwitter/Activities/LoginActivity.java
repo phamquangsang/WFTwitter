@@ -1,4 +1,4 @@
-package app.com.phamsang.wftwitter;
+package app.com.phamsang.wftwitter.Activities;
 
 import android.content.Intent;
 
@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.codepath.oauth.OAuthLoginActivity;
+
+import app.com.phamsang.wftwitter.R;
+import app.com.phamsang.wftwitter.TwitterClient;
 
 /**
  * A login screen that offers login via email/password.

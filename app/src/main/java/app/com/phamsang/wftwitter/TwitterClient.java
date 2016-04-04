@@ -37,6 +37,47 @@ public class TwitterClient extends OAuthBaseClient {
         if(maxId > 0){
             params.put("max_id",String.valueOf(maxId));
         }
+        params.put("count",count);
+        client.get(apiUrl, params, handler);
+    }
+
+    public void getMention(long sinceId, long maxId, int count, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+        RequestParams params = new RequestParams();
+        if(sinceId > 0){
+            params.put("since_id",String.valueOf(sinceId));
+        }
+        if(maxId > 0){
+            params.put("max_id",String.valueOf(maxId));
+        }
+        params.put("count",count);
+        client.get(apiUrl, params, handler);
+    }
+    public void getUserTimeline(String screenName, long sinceId, long maxId, int count, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("statuses/user_timeline.json");
+        RequestParams params = new RequestParams();
+        if(sinceId > 0){
+            params.put("since_id",String.valueOf(sinceId));
+        }
+        if(maxId > 0){
+            params.put("max_id",String.valueOf(maxId));
+        }
+        params.put("count",count);
+        params.put("screen_name",screenName);
+        client.get(apiUrl, params, handler);
+    }
+
+    public void getUserFavoritesList(String screenName, long sinceId, long maxId, int count, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("favorites/list.json");
+        RequestParams params = new RequestParams();
+        if(sinceId > 0){
+            params.put("since_id",String.valueOf(sinceId));
+        }
+        if(maxId > 0){
+            params.put("max_id",String.valueOf(maxId));
+        }
+        params.put("count",count);
+        params.put("screen_name",screenName);
         client.get(apiUrl, params, handler);
     }
 
@@ -55,6 +96,8 @@ public class TwitterClient extends OAuthBaseClient {
         }
         client.post(apiUrl, params, handler);
     }
+
+
 
     public void reTweet(long id, AsyncHttpResponseHandler handler){
         String apiUrl = getApiUrl("statuses/retweet/holderID.json");
@@ -89,6 +132,30 @@ public class TwitterClient extends OAuthBaseClient {
         client.post(apiUrl,params,handler);
     }
 
+    public void follow(String screenName, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("friendships/create.json");
+        RequestParams params = new RequestParams();
+        params.put("screen_name",screenName);
+        client.post(apiUrl,params,handler);
+    }
+
+    public void unFollow(String screenName, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("friendships/destroy.json");
+        RequestParams params = new RequestParams();
+        params.put("screen_name",screenName);
+        client.post(apiUrl,params,handler);
+    }
+
+    public void registerNotification(String screenName,boolean register,AsyncHttpResponseHandler handler ){
+        String apiUrl = getApiUrl("friendships/update.json");
+        RequestParams params = new RequestParams();
+        params.put("screen_name",screenName);
+        params.put("device",register);
+        params.put("retweets",false);
+        client.post(apiUrl,params,handler);
+    }
+
+
     public void getAccount(AsyncHttpResponseHandler handler){
         String apiUrl = getApiUrl("account/verify_credentials.json");
         RequestParams params = new RequestParams();
@@ -97,11 +164,14 @@ public class TwitterClient extends OAuthBaseClient {
         client.get(apiUrl,params,handler);
     }
 
+
+
     public static TwitterClient getInstance(Context c){
         if(sClient==null){
             sClient = (TwitterClient)TwitterClient.getInstance(TwitterClient.class,c);
         }
         return sClient;
     }
+
 
 }

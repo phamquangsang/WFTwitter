@@ -13,7 +13,7 @@ import app.com.phamsang.wftwitter.data.Contract.*;
 public class TwitterDatabaseHelper extends SQLiteOpenHelper {
     private final String LOG_TAG = TwitterDatabaseHelper.class.getSimpleName();
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 7;
 
     static final String DATABASE_NAME = "wftwitter.db";
     public TwitterDatabaseHelper(Context context){
@@ -34,6 +34,24 @@ public class TwitterDatabaseHelper extends SQLiteOpenHelper {
                 TweetEntry.COLLUMN_USER_ID + " INTEGER NOT NULL ,  "+
                 TweetEntry.COLLUMN_IS_LIKED+ " INTEGER NOT NULL , "+
                 TweetEntry.COLLUMN_IS_RETWEETED + " INTEGER NOT NULL , "+
+                TweetEntry.COLLUMN_USERS_MENTION+ " TEXT , "+
+                " FOREIGN KEY (" + TweetEntry.COLLUMN_USER_ID + ") REFERENCES " +
+                UserEntry.TABLE_NAME + " (" + UserEntry.COLLUMN_ID + ") " +
+                ");";
+        final String SQL_CREATE_MENTION_TABLE = "CREATE TABLE "+
+                MentionTweetEntry.TABLE_NAME+" (" +
+                TweetEntry._ID + " INTEGER PRIMARY KEY ,"+
+                TweetEntry.COLLUMN_ID + " INTEGER NOT NULL UNIQUE ," +
+                TweetEntry.COLUMN_TEXT + " TEXT , " +
+                TweetEntry.COLLUMN_TIME +" TEXT NOT NULL , "   +
+                TweetEntry.COLLUMN_IMAGE_URL + " TEXT , "+
+                TweetEntry.COLLUMN_DISPLAY_URL + " TEXT , " +
+                TweetEntry.COLLUMN_RETWEET + " INTEGER NOT NULL , "+
+                TweetEntry.COLLUMN_LIKE + " INTEGER NOT NULL , "+
+                TweetEntry.COLLUMN_USER_ID + " INTEGER NOT NULL ,  "+
+                TweetEntry.COLLUMN_IS_LIKED+ " INTEGER NOT NULL , "+
+                TweetEntry.COLLUMN_IS_RETWEETED + " INTEGER NOT NULL , "+
+                TweetEntry.COLLUMN_USERS_MENTION+ " TEXT , "+
                 " FOREIGN KEY (" + TweetEntry.COLLUMN_USER_ID + ") REFERENCES " +
                 UserEntry.TABLE_NAME + " (" + UserEntry.COLLUMN_ID + ") " +
                 ");";
@@ -50,17 +68,20 @@ public class TwitterDatabaseHelper extends SQLiteOpenHelper {
                 UserEntry.COLLUMN_LIKES + " INTEGER , "+
                 UserEntry.COLLUMN_STATUS_COUNT + " INTEGER , "+
                 UserEntry.COLLUMN_BACKGROUND_IMAGE_URL + " TEXT , "+
-                UserEntry.COLLUMN_PROFILE_IMAGE_URL + " TEXT  "+
+                UserEntry.COLLUMN_PROFILE_IMAGE_URL + " TEXT , "+
+                UserEntry.COLLUMN_FOLLOWING + " INTEGER NOT NULL , "+
+                UserEntry.COLLUMN_NOTIFICATION + " INTEGER NOT NULL  "+
                 ");";
         db.execSQL(SQL_CREATE_TWEET_TABLE);
         db.execSQL(SQL_CREATE_USER_TABLE);
-
+        db.execSQL(SQL_CREATE_MENTION_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + UserEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TweetEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + MentionTweetEntry.TABLE_NAME);
         onCreate(db);
     }
 

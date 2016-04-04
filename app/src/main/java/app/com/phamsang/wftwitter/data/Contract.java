@@ -22,8 +22,11 @@ public final class Contract {
         public static final String COLLUMN_USER_ID = "user_id";
         public static final String COLLUMN_IS_LIKED = "is_liked";
         public static final String COLLUMN_IS_RETWEETED = "is_retweeted";
+        public static final String COLLUMN_USERS_MENTION = "users_mention";
     }
-
+    public static final class MentionTweetEntry{
+        public static final String TABLE_NAME = "mention_tweets_table";
+    }
     public static final class UserEntry implements BaseColumns{
         public static final String TABLE_NAME = "user";
         public static final String COLLUMN_ID = "user_id";
@@ -37,6 +40,8 @@ public final class Contract {
         public static final String COLLUMN_STATUS_COUNT = "startus_count";
         public static final String COLLUMN_BACKGROUND_IMAGE_URL = "background_image_url";
         public static final String COLLUMN_PROFILE_IMAGE_URL = "profile_image";
+        public static final String COLLUMN_FOLLOWING = "is_following";
+        public static final String COLLUMN_NOTIFICATION = "is_notification";
     }
 
 }

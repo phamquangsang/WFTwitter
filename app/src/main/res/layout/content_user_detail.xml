@@ -1,85 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="app.com.phamsang.wftwitter.UserDetailActivity"
+    tools:context=".Activities.UserDetailActivity"
     tools:showIn="@layout/activity_user_detail">
 
-    <LinearLayout
-        android:orientation="vertical"
+
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/user_detail_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageView_profile"
-            android:layout_margin="8dp"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/profile"
-            app:civ_border_color="#FF000000"
-            app:civ_border_width="0dp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:paddingLeft="8dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:text="Medium Text"
-            android:id="@+id/textView_Name"/>
-
-        <TextView
-            android:paddingLeft="8dp"
-            android:id="@+id/textView_ScreenName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:text="Small Text"/>
-
-        <TextView
-            android:paddingLeft="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.SearchResult.Title"
-            android:text="Medium Text"
-            android:id="@+id/textView_description"
-            android:layout_marginTop="40dp"/>
-
-        <TextView
-            android:paddingLeft="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
-            android:id="@+id/textView_link"
-            android:visibility="gone"/>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="30dp"
-            android:gravity="center_horizontal">
-
-            <TextView
-                android:paddingRight="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
-                android:text="Medium Text"
-                android:id="@+id/textView_following"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
-                android:text="Medium Text"
-                android:id="@+id/textView_follower"/>
-        </LinearLayout>
-    </LinearLayout>
-
-</android.support.v4.widget.NestedScrollView>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"></android.support.v4.view.ViewPager>
+</LinearLayout>

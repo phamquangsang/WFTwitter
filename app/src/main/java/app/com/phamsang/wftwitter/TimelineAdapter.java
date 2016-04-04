@@ -1,10 +1,13 @@
 package app.com.phamsang.wftwitter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,18 +19,27 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.apache.http.Header;
+
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+
+import app.com.phamsang.wftwitter.Activities.TimelineActivity;
+import app.com.phamsang.wftwitter.Activities.TweetDetailActivity;
+import app.com.phamsang.wftwitter.Activities.UserDetailActivity;
 import app.com.phamsang.wftwitter.Object.Tweet;
+import app.com.phamsang.wftwitter.data.Contract;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by Quang Quang on 3/27/2016.
  */
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHolder> {
+    private static final String LOG_TAG = TimelineAdapter.class.getSimpleName() ;
     private List<Tweet> mDataset = new ArrayList<Tweet>();
     private Context mContext;
-
+    private long mSinceId;
+    private long mMaxId;
     public TimelineAdapter(Context context) {
         mContext = context;
     }
@@ -91,8 +103,22 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
 
     public void swapdata(List<Tweet> newDataset) {
         mDataset = newDataset;
+        if(mDataset!=null&&mDataset.size()!=0){
+            updateMaxId(mDataset.get(mDataset.size()-1).getId());
+            updateSinceId(mDataset.get(0).getId());
+        }
         notifyDataSetChanged();
     }
+
+    public void insertDataset(List<Tweet> data,int position){
+        mDataset.addAll(position,data);
+        if(mDataset!=null&&mDataset.size()!=0){
+            updateMaxId(mDataset.get(mDataset.size()-1).getId());
+            updateSinceId(mDataset.get(0).getId());
+        }
+        notifyItemRangeInserted(position,data.size());
+    }
+
 
     private void setUpButtonListioner(final ViewHolder holder, final Tweet data) {
         holder.mRetweet.setOnClickListener(new View.OnClickListener() {
@@ -110,9 +136,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
                                 int retweet = data.getRetweetCount() + 1;
                                 data.setRetweetCount(retweet);
                                 holder.mRetweet.setText(String.valueOf(retweet));
-                                int result = Utilities.updateTweet(data.getId(), data.toContentValue(), mContext);
+                                int result = DatabaseUtilities.updateTweet(data.getId(), data.toContentValue(), mContext, Contract.TweetEntry.TABLE_NAME);
                                 if (result == 0) {
-                                    Toast.makeText(mContext, "failed to update database", Toast.LENGTH_SHORT).show();
+                                    Log.i(LOG_TAG, "failed to update database, the tweet id: "+data.getId()+" maybe not in database");
                                 }
                             }
                         }
@@ -133,7 +159,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
                                 int retweet = data.getRetweetCount() - 1;
                                 data.setRetweetCount(retweet);
                                 holder.mRetweet.setText(String.valueOf(retweet));
-                                int result = Utilities.updateTweet(data.getId(), data.toContentValue(), mContext);
+                                int result = DatabaseUtilities.updateTweet(data.getId(), data.toContentValue(), mContext, Contract.TweetEntry.TABLE_NAME);
                                 if (result == 0) {
                                     Toast.makeText(mContext, "failed to update database", Toast.LENGTH_SHORT).show();
                                 }
@@ -165,9 +191,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
                                 int likesCount = data.getFavouriteCount() + 1;
                                 data.setFavouriteCount(likesCount);
                                 holder.mLike.setText(String.valueOf(likesCount));
-                                int result = Utilities.updateTweet(data.getId(), data.toContentValue(), mContext);
+                                int result = DatabaseUtilities.updateTweet(data.getId(), data.toContentValue(), mContext, Contract.TweetEntry.TABLE_NAME);
                                 if (result == 0) {
-                                    Toast.makeText(mContext, "failed to update database", Toast.LENGTH_SHORT).show();
+                                    Log.i(LOG_TAG, "failed to update database, the tweet id: "+data.getId()+" maybe not in database");
                                 }
                             }
                         }
@@ -188,9 +214,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
                                 int likeCount = data.getFavouriteCount() - 1;
                                 data.setFavouriteCount(likeCount);
                                 holder.mLike.setText(String.valueOf(likeCount));
-                                int result = Utilities.updateTweet(data.getId(), data.toContentValue(), mContext);
+                                int result = DatabaseUtilities.updateTweet(data.getId(), data.toContentValue(), mContext, Contract.TweetEntry.TABLE_NAME);
                                 if (result == 0) {
-                                    Toast.makeText(mContext, "failed to update database", Toast.LENGTH_SHORT).show();
+                                    Log.i(LOG_TAG, "failed to update database, the tweet id: "+data.getId()+" maybe not in database");
                                 }
                             }
                         }
@@ -209,16 +235,61 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
             public void onClick(View v) {
                 TweetComposerDialog dialog = TweetComposerDialog.newInstance(null, data);
                 AppCompatActivity activity = (AppCompatActivity) mContext;
-                dialog.show(activity.getFragmentManager(), TweetComposerDialog.DIALOG_TAG);
+                dialog.show(activity.getSupportFragmentManager(), TweetComposerDialog.DIALOG_TAG);
             }
         });
 
         holder.mUserName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserDetailActivity.startDetailView(data.getUser(),mContext);
+                startDetailUserActivity(v,data);;
             }
         });
+        holder.mProfileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDetailUserActivity(v,data);
+            }
+        });
+        holder.mScreenName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDetailUserActivity(v,data);
+            }
+        });
+        holder.mTweetContent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDetailTweetView(v,data, holder);
+            }
+        });
+        holder.mImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDetailTweetView(v, data, holder);
+            }
+        });
+    }
+
+    private void startDetailUserActivity(View v, Tweet data) {
+        Intent i = UserDetailActivity.getIntent(data.getUser(),mContext);
+        AppCompatActivity activity = (AppCompatActivity)mContext;
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(activity, v, "profile");
+        activity.startActivity(i,options.toBundle());
+    }
+
+    private void startDetailTweetView(View v, Tweet data, ViewHolder holder) {
+        Intent i = TweetDetailActivity.createIntent(data,v.getContext());
+
+        AppCompatActivity activity = (AppCompatActivity)mContext;
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(activity, (View)holder.mProfileImageView, "profile");
+        if(mContext instanceof TimelineActivity){
+            TimelineActivity timelineActivity = (TimelineActivity)activity;
+            timelineActivity.startActivityForResult(i,TimelineActivity.TWEET_DETAILREQUEST_CODE,options.toBundle());
+        }else
+            activity.startActivity(i, options.toBundle());
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -242,10 +313,27 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
             mTweetContent = (TextView) v.findViewById(R.id.tweet_content);
             mImage = (ImageView) v.findViewById(R.id.imageView_media);
             mReplyButton = (Button) v.findViewById(R.id.button_reply);
+
             mRetweet = (Button) v.findViewById(R.id.button_retweet);
             mLike = (Button) v.findViewById(R.id.buttom_like);
             mProfileImageView = (CircleImageView) v.findViewById(R.id.profile_image);
         }
     }
+    private void updateSinceId(long sinceId) {
+        mSinceId = sinceId;
+        //mSetting.edit().putLong(SINCE_ID_KEY, sinceId).commit();
+    }
 
+    private void updateMaxId(long maxId) {
+        mMaxId = maxId-1;
+        //mSetting.edit().putLong(MAX_ID_KEY, maxId).commit();
+    }
+
+    public long getSinceId() {
+        return mSinceId;
+    }
+
+    public long getMaxId() {
+        return mMaxId;
+    }
 }

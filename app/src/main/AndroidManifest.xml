@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".TimelineActivity"
+            android:name=".Activities.TimelineActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -36,8 +36,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".UserDetailActivity"
+            android:name=".Activities.UserDetailActivity"
             android:label="@string/title_activity_user_detail"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".Activities.TweetDetailActivity"
+            android:label="@string/title_activity_tweet_detail"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>

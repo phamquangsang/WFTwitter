@@ -2,10 +2,10 @@ package app.com.phamsang.wftwitter;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -71,6 +71,9 @@ public class TweetComposerDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Bundle arg = getArguments();
+        mUser = arg.getParcelable(USER_EXTRA);
+        mReplyTo = arg.getParcelable(REPLY_TO);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
@@ -86,9 +89,18 @@ public class TweetComposerDialog extends DialogFragment {
             }
         });
         mProfileImage = (CircleImageView)rootView.findViewById(R.id.imageView_profile_composer);
+        if(mUser!=null){
+            Glide.with(getActivity()).load(mUser.getProfileUrl()).into(mProfileImage);
+
+        }
         mContent = (EditText)rootView.findViewById(R.id.editText_compose_content);
         if(mReplyTo!=null){
-            mContent.setText("@"+mReplyTo.getUser().getScreenName());
+            String userMentionString = "@"+mReplyTo.getUser().getScreenName()+" ";
+            if(mReplyTo.getUsersMention()!=null){
+                userMentionString += mReplyTo.getUsersMention();
+            }
+            mContent.setText(userMentionString);
+            Log.d(LOG_TAG,"reply string: "+"@"+mReplyTo.getUser().getScreenName()+" "+mReplyTo.getUsersMention());
         }
         mContent.addTextChangedListener(new TextWatcher() {
             @Override
@@ -142,13 +154,7 @@ public class TweetComposerDialog extends DialogFragment {
         });
         builder.setView(rootView);
 
-        Bundle arg = getArguments();
-        mUser = arg.getParcelable(USER_EXTRA);
-        mReplyTo = arg.getParcelable(REPLY_TO);
-        if(mUser!=null){
-            Glide.with(getActivity()).load(mUser.getProfileUrl()).into(mProfileImage);
 
-        }
 
         return builder.create();
     }
