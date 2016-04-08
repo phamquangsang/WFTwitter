@@ -272,4 +272,9 @@ public class UserDetailActivity extends AppCompatActivity implements TweetCompos
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

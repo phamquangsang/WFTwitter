@@ -283,8 +283,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
         Intent i = TweetDetailActivity.createIntent(data,v.getContext());
 
         AppCompatActivity activity = (AppCompatActivity)mContext;
+//        ActivityOptionsCompat options = ActivityOptionsCompat.
+//                makeSceneTransitionAnimation(activity, (View)holder.mProfileImageView, "profile");
         ActivityOptionsCompat options = ActivityOptionsCompat.
-                makeSceneTransitionAnimation(activity, (View)holder.mProfileImageView, "profile");
+                makeSceneTransitionAnimation(activity);
         if(mContext instanceof TimelineActivity){
             TimelineActivity timelineActivity = (TimelineActivity)activity;
             timelineActivity.startActivityForResult(i,TimelineActivity.TWEET_DETAILREQUEST_CODE,options.toBundle());
