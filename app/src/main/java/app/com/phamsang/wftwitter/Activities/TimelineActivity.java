@@ -28,7 +28,6 @@ import app.com.phamsang.wftwitter.Object.User;
 import app.com.phamsang.wftwitter.R;
 import app.com.phamsang.wftwitter.TweetComposerDialog;
 import app.com.phamsang.wftwitter.TwitterClient;
-import app.com.phamsang.wftwitter.Utilities;
 
 public class TimelineActivity extends AppCompatActivity implements TweetComposerDialog.NoticeDialogListener {
     //constant
@@ -45,6 +44,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
     private ViewPager mViewPager;
     private OnPostButtonClickListener mOnPostButtonClickListener;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +54,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
         initializeMemberVariable();
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -77,8 +78,8 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
             startActivity(i);
             finish();
             return true;
-        }else if(id==R.id.action_profile){
-            UserDetailActivity.startDetailView(mUser,this);
+        } else if (id == R.id.action_profile) {
+            UserDetailActivity.startDetailView(mUser, this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -146,8 +147,27 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
 //        TweetListFragment fragment = (TweetListFragment)
 //                getSupportFragmentManager().findFragmentByTag(TweetListFragment.HOME_TIMELINE_FRAGMENT_TAG);
 //        fragment.getLatestTweets(fragment.getSinceId());
-        if(mOnPostButtonClickListener!=null)
+        if (mOnPostButtonClickListener != null)
             mOnPostButtonClickListener.onPostButtonClick();
+    }
+
+    public void setOnPostButtonClickListener(OnPostButtonClickListener onPostButtonClickListener) {
+        mOnPostButtonClickListener = onPostButtonClickListener;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(resultCode, resultCode, data);
+        if (requestCode == TWEET_DETAILREQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (mOnPostButtonClickListener != null)//new tweet posted, notify timelineFragment refresh tweet list.
+                    mOnPostButtonClickListener.onPostButtonClick();
+            }
+        }
+    }
+
+    public interface OnPostButtonClickListener {
+        void onPostButtonClick();
     }
 
     ///-----------------------------Tab setup
@@ -161,12 +181,12 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            if(position==0){
+            if (position == 0) {
                 return TimelineFragment.newInstance();
             }
-            if(position==1){
+            if (position == 1) {
                 MentionFragment mentionFragment = new MentionFragment();
-                return  mentionFragment;
+                return mentionFragment;
             }
             return null;
         }
@@ -188,21 +208,6 @@ public class TimelineActivity extends AppCompatActivity implements TweetComposer
             return null;
         }
     }
-    public interface OnPostButtonClickListener{
-        void onPostButtonClick();
-    }
-    public void setOnPostButtonClickListener(OnPostButtonClickListener onPostButtonClickListener){
-        mOnPostButtonClickListener = onPostButtonClickListener;
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(resultCode, resultCode, data);
-        if(requestCode==TWEET_DETAILREQUEST_CODE){
-            if(resultCode==RESULT_OK){
-                if(mOnPostButtonClickListener!=null)//new tweet posted, notify timelineFragment refresh tweet list.
-                    mOnPostButtonClickListener.onPostButtonClick();
-            }
-        }
-    }
+
 }
